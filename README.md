@@ -148,21 +148,3 @@ async def root_cause(query: dict):
     }
 ```
 
-## 🤝 Contributing (Future)
-1. Fork
-2. Branch (`feature/add-api`)
-3. Commit conventional style (`feat: add mock api`)
-4. PR with context & screenshots
-
-## 🪪 License
-Choose one (e.g. MIT). Example MIT header can be added later:
-```
-MIT License © 2025 Your Name
-```
-
-## 📬 Contact / Next Steps
-Want this turned into a functional prototype (API + minimal telemetry adapters)?
-Open an issue or request the scaffold and we can expand it.
-
----
-**Status:** Static concept page. Ready for incremental enhancement.
