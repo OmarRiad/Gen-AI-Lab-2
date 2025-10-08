@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Root Cause Analysis Assistant</title>
+  <meta name="description" content="AI-powered root cause analysis assistant for observability stacks (metrics, logs, traces)." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container flex between center-v">
+      <h1 class="logo">Root Cause Analysis Assistant</h1>
+      <nav>
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#flow">Flow</a>
+        <a href="#example">Example</a>
+        <a href="#stack">Stack</a>
+        <a href="#future">Future</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="container">
+        <h2>Ask: <span class="highlight">"Why is the checkout service slow?"</span><br> Get a focused, evidence-based answer.</h2>
+        <p class="lead">An AI layer over your observability data that correlates metrics, traces, and logs to suggest the most probable root cause and next debugging steps.</p>
+        <a class="btn" href="#example">See Example Output ↓</a>
+      </div>
+    </section>
+
+    <section id="problem" class="section">
+      <div class="container">
+        <h3>The Problem</h3>
+        <ul class="key-points">
+          <li>Engineers waste time pivoting between dashboards (metrics), trace views, and raw logs.</li>
+          <li>Answering <em>why</em> latency spiked requires mental correlation across layers.</li>
+          <li>Alerts provide symptoms, not causes or next steps.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="solution" class="section alt">
+      <div class="container">
+        <h3>The AI-Powered Solution</h3>
+        <ol class="numbered">
+          <li>Continuously pull recent metrics (Prometheus), traces (Tempo/Jaeger), and logs (Loki).</li>
+          <li>Detect anomalies / significant deltas around a user question or alert window.</li>
+          <li>Assemble a contextual prompt: KPIs, correlated spikes, trace spans with outliers, log error clusters.</li>
+          <li>LLM performs causal reasoning & ranks hypotheses.</li>
+          <li>Return: probable cause + confidence + actionable next steps.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="architecture" class="section">
+      <div class="container">
+        <h3>High-Level Architecture</h3>
+        <div class="arch-grid">
+          <div class="card">
+            <h4>Ingestion Layer</h4>
+            <p>Adapters pull/stream: Prometheus (metrics), Tempo/Jaeger (traces), Loki (logs). Windowed around query time.</p>
+          </div>
+          <div class="card">
+            <h4>Correlation Engine</h4>
+            <p>Computes anomalies (z-score, seasonal baselines), span latency outliers, log clustering (e.g. MiniBatch KMeans).</p>
+          </div>
+          <div class="card">
+            <h4>Context Builder</h4>
+            <p>Summarizes raw signals into compact, structured context blocks (JSON + natural language).</p>
+          </div>
+          <div class="card">
+            <h4>Reasoning Layer</h4>
+            <p>LLM (OpenAI / Claude) orchestrated via LangChain: hypothesis generation → evidence scoring → top hypothesis.</p>
+          </div>
+          <div class="card">
+            <h4>Response API</h4>
+            <p>Returns JSON: {question, probable_cause, evidence, next_steps, confidence} plus human-readable summary.</p>
+          </div>
+        </div>
+        <details class="diagram">
+          <summary>Show Architecture Diagram (Mermaid)</summary>
+          <pre class="mermaid">flowchart LR
+  User[User Question / Alert] --> API
+  API --> Ingest[Data Ingestion]
+  Ingest --> Correlate[Correlation Engine]
+  Correlate --> Context[Context Builder]
+  Context --> LLM[LLM Reasoning Loop]
+  LLM --> Rank[Hypothesis Ranking]
+  Rank --> Answer[Answer + Next Steps]
+  Answer --> User
+
+  subgraph Observability_Stack[Observability Stack]
+    M[(Prometheus)]
+    T[(Tempo/Jaeger)]
+    L[(Loki)]
+  end
+
+  Ingest --> M
+  Ingest --> T
+  Ingest --> L</pre>
+          <noscript>
+            <pre class="code-block"><code>flowchart LR\nUser[User Question / Alert] --> API\nAPI --> Ingest[Data Ingestion]\nIngest --> Correlate[Correlation Engine]\nCorrelate --> Context[Context Builder]\nContext --> LLM[LLM Reasoning Loop]\nLLM --> Rank[Hypothesis Ranking]\nRank --> Answer[Answer + Next Steps]\nAnswer --> User\n\nsubgraph Observability Stack\n  M[(Prometheus)]\n  T[(Tempo/Jaeger)]\n  L[(Loki)]\nend\n\nIngest --> M\nIngest --> T\nIngest --> L</code></pre>
+          </noscript>
+        </details>
+      </div>
+    </section>
+
+    <section id="flow" class="section alt">
+      <div class="container">
+        <h3>Reasoning Flow</h3>
+        <div class="timeline">
+          <div class="t-item"><span>1</span><p><strong>User Query:</strong> Natural language question or triggered alert context.</p></div>
+          <div class="t-item"><span>2</span><p><strong>Time Windowing:</strong> Focus on ± N minutes around event.</p></div>
+          <div class="t-item"><span>3</span><p><strong>Signal Extraction:</strong> Top changing metrics, slowest spans, error log clusters.</p></div>
+          <div class="t-item"><span>4</span><p><strong>Context Compression:</strong> Summaries & structured JSON.</p></div>
+          <div class="t-item"><span>5</span><p><strong>LLM Loop:</strong> Generate hypotheses → request missing evidence (if needed) → refine.</p></div>
+          <div class="t-item"><span>6</span><p><strong>Answer:</strong> Cause + justification + next steps + confidence.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="example" class="section">
+      <div class="container">
+        <h3>Example Output</h3>
+        <div class="example-output">
+          <pre><code>{
+  "question": "Why is the checkout service slow?",
+  "probable_cause": "MongoDB pod CPU saturation causing increased query latency for order aggregation pipeline.",
+  "evidence": [
+    "p95 latency for checkout_service +240% starting 12:29",
+    "MongoDB pod cpu_usage 80% → 96% sustained",
+    "Trace span db.query.aggregate median 38ms → 140ms",
+    "Logs: increase in 'COLLSCAN' warnings (no index)"
+  ],
+  "next_steps": [
+    "EXPLAIN aggregation pipeline; verify index on (user_id, status)",
+    "Check recent deployment at 12:25 for query change",
+    "Add index or rewrite stage causing full collection scan"
+  ],
+  "confidence": 0.82
+}</code></pre>
+        </div>
+        <p class="note">Human-readable summary: High latency correlates with CPU-bound MongoDB pod performing unindexed collection scans beginning shortly before degradation.</p>
+      </div>
+    </section>
+
+    <section id="stack" class="section alt">
+      <div class="container">
+        <h3>Technology Stack</h3>
+        <ul class="stack">
+          <li><strong>Metrics:</strong> Prometheus</li>
+          <li><strong>Traces:</strong> Grafana Tempo or Jaeger</li>
+          <li><strong>Logs:</strong> Loki</li>
+          <li><strong>Reasoning Orchestration:</strong> LangChain</li>
+          <li><strong>LLM Providers:</strong> OpenAI / Anthropic Claude (pluggable)</li>
+          <li><strong>Summarization Cache:</strong> Redis / SQLite embeddings index</li>
+          <li><strong>API:</strong> FastAPI / Express (simple REST or GraphQL) </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="future" class="section">
+      <div class="container">
+        <h3>Future Enhancements</h3>
+        <ul class="key-points">
+          <li>Continuous background anomaly detection memory.</li>
+          <li>Explainability panel: show ranked discarded hypotheses.</li>
+          <li>Cost-aware token budgeting & adaptive summarization.</li>
+          <li>Action suggestions that can trigger runbooks.</li>
+          <li>Feedback loop to retrain hypothesis ranking.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section alt" id="try">
+      <div class="container">
+        <h3>Try It (Pseudo API)</h3>
+        <div class="example-output">
+          <pre><code>POST /api/root-cause
+{
+  "question": "Why is checkout slow?",
+  "service": "checkout-service",
+  "time_window": {
+    "end": "2025-10-08T12:35:00Z",
+    "minutes": 15
+  }
+}</code></pre>
+        </div>
+        <p class="note">Response returns structured JSON as in the example above.</p>
+      </div>
+    </section>
+
+    <section class="cta section">
+      <div class="container">
+        <h3>Interested in Building This?</h3>
+        <p>Swap in your own observability endpoints and LLM provider. Start with a thin prototype: one metric + one trace query + log sample clustering.</p>
+        <button id="ideaButton" class="btn secondary">Generate a Starter Prompt</button>
+        <div id="generatedPrompt" class="generated hidden"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small">
+      <p>© 2025 Root Cause Analysis Assistant Concept. This is a simple static explainer page.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid lazily so it only renders after the <details> is opened
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'default' : 'dark',
+      securityLevel: 'antiscript'
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      const details = document.querySelector('details.diagram');
+      if(details){
+        const renderOnce = () => {
+          mermaid.run({ querySelector: '.diagram .mermaid' });
+        };
+        // Render when user expands first time
+        details.addEventListener('toggle', () => {
+          if(details.open){
+            renderOnce();
+          }
+        }, { once: true });
+      }
+    });
+  </script>
+  <script src="js/app.js"></script>
+</body>
+</html>
